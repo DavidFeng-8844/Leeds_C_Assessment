@@ -9,6 +9,7 @@ typedef struct {
     int steps;
 } FITNESS_DATA;
 
+
 // Define any additional variables here
 
 // This is your helper function. Do not change it in any way.
