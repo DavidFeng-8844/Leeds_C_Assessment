@@ -53,8 +53,8 @@ int main() {
 
     // Read and store the data from the file
     for (int i = 0; i < 3; i++) {
-        char record[44]; // Assuming a reasonable maximum length for a line
-        if (fgets(record, sizeof(record), file) != NULL) {//use fgets to read until a new line is found
+        char record[44]; // Define a maximum length for a line
+        if (fgets(record, sizeof(record), file) != NULL) { //Use fgets to read until a new line is found or the maximum length is reached
             char date[11], time[6], steps[10];
             tokeniseRecord(record, ",", date, time, steps);
             strncpy(data[i].date, date, sizeof(data[i].date));
