@@ -137,9 +137,16 @@ void sortDataDescending(FITNESS_DATA *data, int numRecords) {
 
 //The WriteDataAsTSV function writes the data to a TSV file.
 void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords) {
-    // Create a TSV file with the same filename but with the file extension .tsv
+    // Create a TSV file with the same filename (excluding .csv) with the file extension .tsv
+    char *extension = ".tsv";
     char tsvFilename[100];
-    snprintf(tsvFilename, sizeof(tsvFilename), "%s.tsv", filename);
+
+    // Check if the filename ends with ".csv" and remove it
+    if (strstr(filename, ".csv") == filename + strlen(filename) - 4) {
+        snprintf(tsvFilename, sizeof(tsvFilename), "%.*s%s", (int)(strlen(filename) - 4), filename, extension);
+    } else {
+        snprintf(tsvFilename, sizeof(tsvFilename), "%s%s", filename, extension);
+    }
 
     // Open the file for writing
     FILE *file = fopen(tsvFilename, "w");
@@ -156,3 +163,4 @@ void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords) {
     // Close the file
     fclose(file);
 }
+
