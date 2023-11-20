@@ -8,5 +8,6 @@ typedef struct {
 } FITNESS_DATA;
 
 // Declare my helper functions here
+void tokeniseRecord(const char *input, const char *delimiter, char *date, char *time, char *steps);
 
 #endif
