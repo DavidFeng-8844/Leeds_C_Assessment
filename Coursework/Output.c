@@ -65,6 +65,7 @@ void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
     *numRecords = 0;
     char line[100]; // Adjust the buffer size as needed
 
+    //Record the line of data 
     while (fgets(line, sizeof(line), file) != NULL) {
         (*numRecords)++;
     }
