@@ -48,7 +48,8 @@ int main() {
                 largestSteps(data, numRecords);
                 break;
             case 'E':
-                printf("Mean step count: %.2f\n", meanStepCount(data, numRecords));
+                printf("Mean step count: %d\n", (int)(meanStepCount(data, numRecords)));
+
                 break;
             case 'F':
                 longestPeriodAbove500(data, numRecords);
@@ -57,7 +58,7 @@ int main() {
                 printf("Quitting the program.\n");
                 break;
             default:
-                printf("Invalid option. Please try again.\n");
+                printf("Invalid choice. Try again.\n");
                 break;
         }
     } while (choice != 'Q');
@@ -101,8 +102,7 @@ void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
     // Open the CSV file for reading
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        perror("Error when opening file");
-        return;
+        printf("Error: Could not find or open the file.");
     }
 
     // Determine the number of records in the file
@@ -185,8 +185,8 @@ double meanStepCount(FITNESS_DATA *data, int numRecords) {
     for (int i = 0; i < numRecords; i++) {
         totalSteps += data[i].steps;
     }
-
-    return (double)totalSteps / numRecords;
+    double mean = (double) (totalSteps / numRecords);
+    return mean;
 }
 
 void longestPeriodAbove500(FITNESS_DATA *data, int numRecords) {

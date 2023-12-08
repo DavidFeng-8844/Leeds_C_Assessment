@@ -170,6 +170,8 @@ void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords) {
         fprintf(file, "%s\t%s\t%d\n", data[i].date, data[i].time, data[i].steps);
     }
 
+    printf("Data sorted and written to %s\n", tsvFilename);
+
     // Close the file
     fclose(file);
 }
