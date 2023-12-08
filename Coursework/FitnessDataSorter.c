@@ -15,6 +15,15 @@ int main() {
     int numRecords = 0;
 
     char choice;
+    do
+    {
+        printf("Enter Filename: ");
+        scanf("%s", filename);
+        importData(filename, &data, &numRecords);
+        sortDataDescending(data, numRecords);
+        writeDataAsTSV(filename, data, numRecords);
+    } while (numRecords == 0 );
+/*    
     do {
         printf("Select an option:\n");
         printf("A: Specify the filename to be imported\n");
@@ -43,7 +52,7 @@ int main() {
                 break;
         }
     } while (choice != 'Q');
-
+*/
     // Clean up memory
     if (data) {
         free(data);
