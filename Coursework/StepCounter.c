@@ -4,11 +4,11 @@
 #include "FitnessDataStruct.h"
 
 // Function prototypes
-void importData(char *filename, FITNESS_DATA **data, int *numRecords);
+int importData(char *filename, FITNESS_DATA **data, int *numRecords);
 int totalRecords(FITNESS_DATA *data, int numRecords);
 void fewestSteps(FITNESS_DATA *data, int numRecords);
 void largestSteps(FITNESS_DATA *data, int numRecords);
-double meanStepCount(FITNESS_DATA *data, int numRecords);
+int meanStepCount(FITNESS_DATA *data, int numRecords);
 void longestPeriodAbove500(FITNESS_DATA *data, int numRecords);
 //Original Tokennisation function
 void tokeniseRecord(const char *input, const char *delimiter,
@@ -36,7 +36,10 @@ int main() {
             case 'A':
                 printf("Input filename: ");
                 scanf("%s", filename);
-                importData(filename, &data, &numRecords);
+                if (importData(filename, &data, &numRecords) != 0) {
+                    // Handle the error, for example, return 1 to indicate failure
+                    return 1;
+                }
                 break;
             case 'B':
                 printf("Total records: %d\n", totalRecords(data, numRecords));
@@ -48,8 +51,7 @@ int main() {
                 largestSteps(data, numRecords);
                 break;
             case 'E':
-                printf("Mean step count: %d\n", (int)(meanStepCount(data, numRecords)));
-
+                printf("Mean step count: %d\n", meanStepCount(data, numRecords));
                 break;
             case 'F':
                 longestPeriodAbove500(data, numRecords);
@@ -98,11 +100,12 @@ void tokeniseRecord(const char *input, const char *delimiter,
     free(inputCopy);
 }
 
-void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
+int importData(char *filename, FITNESS_DATA **data, int *numRecords) {
     // Open the CSV file for reading
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        printf("Error: Could not find or open the file.");
+        printf("Error: Could not find or open the file.\n");
+        return 1; // Return an error code
     }
 
     // Determine the number of records in the file
@@ -130,13 +133,17 @@ void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
             (*data)[i].steps = atoi(steps);
         } else {
             printf("Error reading data from file.\n");
-            break;
+            fclose(file);
+            return 1; // Return an error code
         }
     }
 
     // Close the file
     fclose(file);
+
+    return 0; // Return success
 }
+
 
 int totalRecords(FITNESS_DATA *data, int numRecords) {
     return numRecords;
@@ -176,17 +183,22 @@ void largestSteps(FITNESS_DATA *data, int numRecords) {
     }
 }
 
-double meanStepCount(FITNESS_DATA *data, int numRecords) {
+int meanStepCount(FITNESS_DATA *data, int numRecords) {
     if (numRecords == 0) {
-        return 0.0;
+        return 0;
     }
 
     int totalSteps = 0;
     for (int i = 0; i < numRecords; i++) {
         totalSteps += data[i].steps;
     }
-    double mean = (double) (totalSteps / numRecords);
-    return mean;
+
+    // Calculate mean using floating-point division
+    double mean = (double)totalSteps / numRecords;
+
+    // Round the mean to the nearest integer in the normal way
+    int roundedMean = (int)(mean + 0.5);
+    return roundedMean;
 }
 
 void longestPeriodAbove500(FITNESS_DATA *data, int numRecords) {

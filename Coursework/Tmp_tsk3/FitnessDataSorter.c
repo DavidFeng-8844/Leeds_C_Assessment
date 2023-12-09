@@ -3,6 +3,9 @@
 #include <string.h>
 #include "FitnessDataStruct.h"
 
+#define MAX_FILENAME_SIZE 100
+#define MAX_LINE_SIZE 100
+
 // Function prototypes
 void tokeniseRecord(const char *input, const char *delimiter, char *date, char *time, char *steps);
 void importData(char *filename, FITNESS_DATA **data, int *numRecords);
@@ -10,58 +13,31 @@ void sortDataDescending(FITNESS_DATA *data, int numRecords);
 void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords);
 
 int main() {
-    char filename[100];
+    char filename[MAX_FILENAME_SIZE];
     FITNESS_DATA *data = NULL;
     int numRecords = 0;
 
-    char choice;
-    do
-    {
-        printf("Enter Filename: ");
-        scanf("%s", filename);
-        importData(filename, &data, &numRecords);
-        sortDataDescending(data, numRecords);
-        writeDataAsTSV(filename, data, numRecords);
-    } while (numRecords == 0 );
-/*    
     do {
-        printf("Select an option:\n");
-        printf("A: Specify the filename to be imported\n");
-        printf("S: Sort data by step count in descending order\n");
-        printf("W: Write data to a TSV file\n");
-        printf("Q: Quit\n");
-        scanf(" %c", &choice);
+        printf("Enter Filename: ");
+        scanf("%99s", filename); // Limit input length to prevent buffer overflow
+        importData(filename, &data, &numRecords);
 
-        switch (choice) {
-            case 'A':
-                printf("Enter Filename: ");
-                scanf("%s", filename);
-                importData(filename, &data, &numRecords);
-                break;
-            case 'S':
-                sortDataDescending(data, numRecords);
-                break;
-            case 'W':
-                writeDataAsTSV(filename, data, numRecords);
-                break;
-            case 'Q':
-                printf("Quitting the program.\n");
-                break;
-            default:
-                printf("Invalid option. Please try again.\n");
-                break;
+        if (numRecords == 0) {
+            printf("No records found in the file. Please try again.\n");
+        } else {
+            sortDataDescending(data, numRecords);
+            writeDataAsTSV(filename, data, numRecords);
         }
-    } while (choice != 'Q');
-*/
+
+    } while (numRecords == 0);
+
     // Clean up memory
-    if (data) {
-        free(data);
-    }
+    free(data);
 
     return 0;
 }
 
-//The importData Function 
+// The importData Function
 void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
     // Open the CSV file for reading
     FILE *file = fopen(filename, "r");
@@ -72,22 +48,27 @@ void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
 
     // Determine the number of records in the file
     *numRecords = 0;
-    char line[100]; // Adjust the buffer size as needed
+    char line[MAX_LINE_SIZE];
 
-    //Record the line of data 
+    // Record the line of data
     while (fgets(line, sizeof(line), file) != NULL) {
         (*numRecords)++;
     }
 
     // Allocate memory for the data
     *data = (FITNESS_DATA *)malloc(*numRecords * sizeof(FITNESS_DATA));
+    if (*data == NULL) {
+        perror("Error allocating memory");
+        fclose(file);
+        return;
+    }
 
     // Reset the file pointer to the beginning
     fseek(file, 0, SEEK_SET);
 
     // Read and store the data from the file
     for (int i = 0; i < *numRecords; i++) {
-        char record[44]; // Define a maximum length for a line
+        char record[MAX_LINE_SIZE];
         if (fgets(record, sizeof(record), file) != NULL) {
             char date[11], time[6], steps[10];
             tokeniseRecord(record, ",", date, time, steps);
@@ -130,7 +111,7 @@ void tokeniseRecord(const char *input, const char *delimiter,
     free(inputCopy);
 }
 
-//The sortDataDescending function sorts the data in descending order by step count.
+// The sortDataDescending function
 void sortDataDescending(FITNESS_DATA *data, int numRecords) {
     // Sort the data in descending order by step count
     for (int i = 0; i < numRecords - 1; i++) {
@@ -145,11 +126,11 @@ void sortDataDescending(FITNESS_DATA *data, int numRecords) {
     }
 }
 
-//The WriteDataAsTSV function writes the data to a TSV file.
+// The writeDataAsTSV function
 void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords) {
     // Create a TSV file with the same filename (excluding .csv) with the file extension .tsv
     char *extension = ".tsv";
-    char tsvFilename[100];
+    char tsvFilename[MAX_FILENAME_SIZE];
 
     // Check if the filename ends with ".csv" and remove it
     if (strstr(filename, ".csv") == filename + strlen(filename) - 4) {
@@ -175,4 +156,3 @@ void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords) {
     // Close the file
     fclose(file);
 }
-
