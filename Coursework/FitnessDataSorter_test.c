@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "FitnessDataStruct.h"
-#include <sys/resource.h>
+// #include <sys/resource.h>
 
 #define MAX_FILENAME_SIZE 100
 #define MAX_LINE_SIZE 200
@@ -14,7 +14,7 @@ void sortDataDescending(FITNESS_DATA *data, int numRecords);
 void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords);
 
 int main() {
-    struct rusage r_usage;
+    // struct rusage r_usage;
 
     char filename[MAX_FILENAME_SIZE];
     FITNESS_DATA *data = NULL;
@@ -34,9 +34,9 @@ int main() {
 
     } while (numRecords == 0);
 
-    getrusage(RUSAGE_SELF, &r_usage);
+    /*getrusage(RUSAGE_SELF, &r_usage);
     printf("Memory usage: %ld kilobytes\n", r_usage.ru_maxrss);
-
+    */
     // Clean up memory
     free(data);
 
@@ -73,7 +73,8 @@ void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
     fseek(file, 0, SEEK_SET);
 
     // Read and store the data from the file
-    for (int i = 0; i < *numRecords; i++) {
+    int i = 0;
+    for (; i < *numRecords; i++) {
         char record[MAX_LINE_SIZE];
         if (fgets(record, sizeof(record), file) != NULL) {
             char date[11], time[6], steps[10];
@@ -122,8 +123,10 @@ void tokeniseRecord(const char *input, const char *delimiter,
 // The sortDataDescending function
 void sortDataDescending(FITNESS_DATA *data, int numRecords) {
     // Sort the data in descending order by step count
-    for (int i = 0; i < numRecords - 1; i++) {
-        for (int j = i + 1; j < numRecords; j++) {
+    int i = 0;
+    for (; i < numRecords - 1; i++) {
+        int j = i + 1;
+        for (; j < numRecords; j++) {
             if (data[i].steps < data[j].steps) {
                 // Swap records if they are out of order
                 FITNESS_DATA temp = data[i];
@@ -155,7 +158,8 @@ void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords) {
     }
 
     // Write the sorted data in TSV format
-    for (int i = 0; i < numRecords; i++) {
+    int i = 0;
+    for (; i < numRecords; i++) {
         fprintf(file, "%s\t%s\t%d\n", data[i].date, data[i].time, data[i].steps);
     }
 
