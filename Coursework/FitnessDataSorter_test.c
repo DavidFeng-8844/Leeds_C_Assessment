@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "FitnessDataStruct.h"
+#include <sys/resource.h>
 
 #define MAX_FILENAME_SIZE 100
 #define MAX_LINE_SIZE 200
@@ -13,6 +14,8 @@ void sortDataDescending(FITNESS_DATA *data, int numRecords);
 void writeDataAsTSV(char *filename, FITNESS_DATA *data, int numRecords);
 
 int main() {
+    struct rusage r_usage;
+
     char filename[MAX_FILENAME_SIZE];
     FITNESS_DATA *data = NULL;
     int numRecords = 0;
@@ -30,6 +33,9 @@ int main() {
         }
 
     } while (numRecords == 0);
+
+    getrusage(RUSAGE_SELF, &r_usage);
+    printf("Memory usage: %ld kilobytes\n", r_usage.ru_maxrss);
 
     // Clean up memory
     free(data);
@@ -72,8 +78,10 @@ void importData(char *filename, FITNESS_DATA **data, int *numRecords) {
         if (fgets(record, sizeof(record), file) != NULL) {
             char date[11], time[6], steps[10];
             tokeniseRecord(record, ",", date, time, steps);
-            strncpy((*data)[i].date, date, sizeof((*data)[i].date));
-            strncpy((*data)[i].time, time, sizeof((*data)[i].time));
+            //strncpy((*data)[i].date, date, sizeof((*data)[i].date));
+            //strncpy((*data)[i].time, time, sizeof((*data)[i].time));
+            strcpy((*data)[i].date, date);
+            strcpy((*data)[i].time, time);
             (*data)[i].steps = atoi(steps);
         } else {
             printf("Error reading data from file.\n");
