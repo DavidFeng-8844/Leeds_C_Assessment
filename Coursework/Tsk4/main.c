@@ -3,7 +3,7 @@
 #define FALLING_EDGE 0   /* Falling edge state */
 #define FAST_WALK_TIME_LIMIT_MS  200  /* ms */
 #define SLOW_WALK_TIME_LIMIT_MS 10000 /* 10s - time without a valid step to reset step count */
-#define STEP_OK 7          /* Number of consecutive valid steps */
+#define STEP_OK 8          /* Number of consecutive valid steps */
 
 unsigned int lastPos = 0;        /* Previous position */
 unsigned int newMax = 0, newMin = 0; /* Maximum and minimum values */
